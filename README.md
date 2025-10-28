@@ -3,6 +3,8 @@
 Data Science Project Topic – Predicting People’s Mood Based On Current Events
 ReadMe File - 
 
+Youtube Video : https://youtu.be/PIPiPAXLnJI
+
 Data Science Project: News Sentiment Analyzer
 1. Data Source
 The dataset is composed of news headlines collected from the New York Times Archive API (publicly available REST service) of the period from Jan 2024 to June 2024.
