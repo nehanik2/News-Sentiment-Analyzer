@@ -96,12 +96,12 @@ str
 
 
 
-7.STEP 1 - DATA EXPLORATION
+7. DATA EXPLORATION
 This include identifying number of rows and columns
 Identifying the shape of data
 Identifying the size of the data
 
-8. STEP 2 - DATA PREPROCESSING 
+    DATA PREPROCESSING 
 This includes finding the missing values 
 Finding the redundant values 
 Replacing missing values with suitable methods 
