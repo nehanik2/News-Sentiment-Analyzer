@@ -1,0 +1,52 @@
+#COMPATIBLE MAKEFILE
+
+# Detect correct python inside venv
+ifeq ($(OS),Windows_NT)
+	VENV_PY := .venv/Scripts/python.exe
+else
+	VENV_PY := .venv/bin/python
+endif
+
+# Default target
+all: setup run_all
+
+
+setup:
+	python -m venv .venv
+	$(VENV_PY) -m pip install --upgrade pip
+	$(VENV_PY) -m pip install -r requirements.txt
+	@echo "✔ Environment setup complete."
+	@echo "⚠ Create a .env file with your API key."
+
+
+collect:
+	$(VENV_PY) data_collector.py
+
+# ---------------------------------------------------------------------
+# 3. Execute all notebooks in correct order
+# ---------------------------------------------------------------------
+run_all:
+	$(VENV_PY) -m jupyter nbconvert --to notebook --execute notebooks/01_EDA.ipynb --output notebooks/01_EDA_out.ipynb
+	$(VENV_PY) -m jupyter nbconvert --to notebook --execute notebooks/02_Data_cleaning.ipynb --output notebooks/02_Data_cleaning_out.ipynb
+	$(VENV_PY) -m jupyter nbconvert --to notebook --execute notebooks/03_Feature_eng.ipynb --output notebooks/03_Feature_eng_out.ipynb
+	$(VENV_PY) -m jupyter nbconvert --to notebook --execute notebooks/04_model.ipynb --output notebooks/04_model_out.ipynb
+	$(VENV_PY) -m jupyter nbconvert --to notebook --execute notebooks/05_Test_evaluation.ipynb --output notebooks/05_Test_evaluation_out.ipynb
+	@echo "✔ All notebooks executed."
+
+# ---------------------------------------------------------------------
+# 4. Clean generated files (Cross-platform delete)
+# ---------------------------------------------------------------------
+clean:
+	$(VENV_PY) -c "import os,glob; [os.remove(f) for f in glob.glob('notebooks/*_out.ipynb')]"
+	$(VENV_PY) -c "import os,glob; [os.remove(f) for f in glob.glob('data/*.csv') if 'raw' not in f]"
+	$(VENV_PY) -c "import os,glob; [os.remove(f) for f in glob.glob('data/*.json')]"
+	$(VENV_PY) -c "import os,glob; [os.remove(f) for f in glob.glob('models/*.pkl')]"
+	@echo "✔ Cleaned generated files."
+
+# ---------------------------------------------------------------------
+# 5. Delete venv + results
+# ---------------------------------------------------------------------
+reset:
+	$(VENV_PY) -c "import shutil,os; shutil.rmtree('.venv', ignore_errors=True)"
+	make clean
+	@echo "✔ Project reset."
