@@ -275,3 +275,5 @@ POTENTIAL CHALLENGES AND ISSUES WE FACED
 1) Scale of the data, downscaling the data was an issue, since the data was huge.
 2) Selecting appropriate text features for predicting the mood and checking which ones highly affect it was challenging. 
 3) Selecting appropriate models checkign that it it adaptable to both numerical and text features was important
+
+
