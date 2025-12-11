@@ -1,52 +1,58 @@
-#COMPATIBLE MAKEFILE
+# Cross-platform Makefile for executing Jupyter notebooks in a Python venv
 
-# Detect correct python inside venv
+PY=python
+VENV=.venv
+OUTPUT=outputs
+
+# Detect Windows vs Unix
 ifeq ($(OS),Windows_NT)
-	VENV_PY := .venv/Scripts/python.exe
+    PYBIN=$(VENV)/Scripts/python.exe
+    JUPYTER=$(VENV)/Scripts/jupyter.exe
+    MKDIR=if not exist $(OUTPUT) mkdir $(OUTPUT)
+    RM=rd /s /q $(VENV) & rd /s /q $(OUTPUT)
 else
-	VENV_PY := .venv/bin/python
+    PYBIN=$(VENV)/bin/python
+    JUPYTER=$(VENV)/bin/jupyter
+    MKDIR=mkdir -p $(OUTPUT)
+    RM=rm -rf $(VENV) $(OUTPUT)
 endif
 
-# Default target
-all: setup run_all
+.PHONY: setup install kernel run-all preprocess train evaluate visualize clean
 
-
+# 1. Create virtual environment & install base tools
 setup:
-	python -m venv .venv
-	$(VENV_PY) -m pip install --upgrade pip
-	$(VENV_PY) -m pip install -r requirements.txt
-	@echo "✔ Environment setup complete."
-	@echo "⚠ Create a .env file with your API key."
+	$(PY) -m venv $(VENV)
+	$(PYBIN) -m pip install --upgrade pip setuptools wheel
+	$(PYBIN) -m pip install jupyter nbconvert jupyter_client ipykernel
+	$(PYBIN) -m ipykernel install --user --name=project-kernel
+	make install
 
+# 2. Install project dependencies
+install:
+	$(PYBIN) -m pip install -r requirements.txt
 
-collect:
-	$(VENV_PY) data_collector.py
+# 3. Run entire pipeline
+run-all: preprocess train evaluate
 
-# ---------------------------------------------------------------------
-# 3. Execute all notebooks in correct order
-# ---------------------------------------------------------------------
-run_all:
-	$(VENV_PY) -m jupyter nbconvert --to notebook --execute notebooks/01_EDA.ipynb --output notebooks/01_EDA_out.ipynb
-	$(VENV_PY) -m jupyter nbconvert --to notebook --execute notebooks/02_Data_cleaning.ipynb --output notebooks/02_Data_cleaning_out.ipynb
-	$(VENV_PY) -m jupyter nbconvert --to notebook --execute notebooks/03_Feature_eng.ipynb --output notebooks/03_Feature_eng_out.ipynb
-	$(VENV_PY) -m jupyter nbconvert --to notebook --execute notebooks/04_model.ipynb --output notebooks/04_model_out.ipynb
-	$(VENV_PY) -m jupyter nbconvert --to notebook --execute notebooks/05_Test_evaluation.ipynb --output notebooks/05_Test_evaluation_out.ipynb
-	@echo "✔ All notebooks executed."
+# 4. Execute preprocessing notebooks
+preprocess:
+	$(MKDIR)
+	$(JUPYTER) nbconvert --to notebook --execute notebooks/01_EDA.ipynb --output 01_EDA_out.ipynb --output-dir $(OUTPUT)
+	$(JUPYTER) nbconvert --to notebook --execute notebooks/02_Data_cleaning.ipynb --output 02_Data_cleaning_out.ipynb --output-dir $(OUTPUT)
 
-# ---------------------------------------------------------------------
-# 4. Clean generated files (Cross-platform delete)
-# ---------------------------------------------------------------------
+# 5. Execute feature engineering + model training
+train:
+	$(JUPYTER) nbconvert --to notebook --execute notebooks/03_Feature_eng.ipynb --output 03_Feature_eng_out.ipynb --output-dir $(OUTPUT)
+	$(JUPYTER) nbconvert --to notebook --execute notebooks/04_model.ipynb --output 04_model_out.ipynb --output-dir $(OUTPUT)
+
+# 6. Execute evaluation notebook
+evaluate:
+	$(JUPYTER) nbconvert --to notebook --execute notebooks/05_Test_evaluation.ipynb --output 05_Test_evaluation_out.ipynb --output-dir $(OUTPUT)
+
+# 7. Optional visualization
+# visualize:
+# 	$(JUPYTER) nbconvert --to notebook --execute notebooks/visualize.ipynb --output notebooks/$(OUTPUT)/visualize_out.ipynb
+
+# 8. Remove virtual environment + output files
 clean:
-	$(VENV_PY) -c "import os,glob; [os.remove(f) for f in glob.glob('notebooks/*_out.ipynb')]"
-	$(VENV_PY) -c "import os,glob; [os.remove(f) for f in glob.glob('data/*.csv') if 'raw' not in f]"
-	$(VENV_PY) -c "import os,glob; [os.remove(f) for f in glob.glob('data/*.json')]"
-	$(VENV_PY) -c "import os,glob; [os.remove(f) for f in glob.glob('models/*.pkl')]"
-	@echo "✔ Cleaned generated files."
-
-# ---------------------------------------------------------------------
-# 5. Delete venv + results
-# ---------------------------------------------------------------------
-reset:
-	$(VENV_PY) -c "import shutil,os; shutil.rmtree('.venv', ignore_errors=True)"
-	make clean
-	@echo "✔ Project reset."
+	$(RM)
