@@ -1,0 +1,11 @@
+{
+    "total_articles": 900,
+    "total_topics": 9,
+    "total_sources": 108,
+    "avg_text_length": 437.4611111111111,
+    "avg_word_count": 70.37666666666667,
+    "date_range": "2025-11-05 to 2025-12-04",
+    "positive_articles": "430",
+    "negative_articles": "288",
+    "neutral_articles": "182"
+}
