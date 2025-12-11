@@ -277,3 +277,9 @@ POTENTIAL CHALLENGES AND ISSUES WE FACED
 3) Selecting appropriate models checkign that it it adaptable to both numerical and text features was important
 
 
+Team Members Information - 
+1)	Name – Neha Nikam, BU ID – U88786364
+2)	Name – Shrishty Gupta, BU ID – U41123810
+3)	Name – Visista Jayanti, BU ID – U59259052
+
+
