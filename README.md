@@ -3,6 +3,8 @@
 Data Science Project Topic – Predicting People’s Mood Based On Current Events
 ReadMe File - 
 
+https://youtu.be/bV1EobiV-DY
+
 This project is a modification of sentiment analysis, where the goal is to identify or predict the possible mood of a person or an individual when reading or viewing a particular event either in social media platforms and news channels.
 Aim – The aim of the project is to provide better insight into the moods the people will feel when reading a particular article or news either on real-time broadcast or social media.
 Scope - The project aims to collect data from over 150,000+ sources including international BBC, CNN, US national New York Times, Washington Post, Business Bloomberg and Wall Street Journal, Tech Techcrunch, Wired, Entertainment and sports. Thwe categories we are collecting in thsi project include politics, economy, health, technology, sports, entertainment, climate, crime and education. It is going to be covering only news in English language, the geographical content will be centered around US, UK, Cnanada and Australia. 
